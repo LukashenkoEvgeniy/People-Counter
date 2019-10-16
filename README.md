@@ -23,7 +23,7 @@ python PeopleCounterMain.py test2.mp4 -w 800
 ```
 
 It is possible to test it with different videos and 
-you can specifiy video frame width for
+you can specifiy video frame width.
 
 ```sh
 $ python PeopleCounterMain.py --help
@@ -41,7 +41,7 @@ optional arguments:
 ```
 
 ## How it works
-If you want chenge video or set stream from rtsp camera change line
+If you want chenge video or set stream from rtsp camera change the line
 
 ```
 camera = cv2.VideoCapture("test2.mp4") # set here your video
