@@ -26,7 +26,7 @@ It is possible to test it with different videos and
 you can specifiy video frame width for
 
 ```sh
-user@user$ python PeopleCounterMain.py --help
+$ python PeopleCounterMain.py --help
 usage: PeopleCounterMain.py [-h] [-w WIDTH] source
 
 Count passing people from the selected video source
@@ -42,7 +42,11 @@ optional arguments:
 
 ## How it works
 If you want chenge video or set stream from rtsp camera change line
+
+```
 camera = cv2.VideoCapture("test2.mp4") # set here your video
+```
+
 This example use mechanism computer the absolute difference between the current frame and
 first frame, so I compare two frame and if chenges exist i find where. If area bigest more than 
 1200 I draw rectange around object which been chenged, if less than contour is too small, ignore it.
