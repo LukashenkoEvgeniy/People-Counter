@@ -6,15 +6,9 @@ import cv2
 import numpy as np
 
 
-width = 800
-
-textIn = 0
-textOut = 0
-
 def testIntersectionIn(x, y):
     res = -450 * x + 400 * y + 157500
     if ((res >= -550) and (res < 550)):
-        print(str(res))
         return True
     return False
 
@@ -22,22 +16,35 @@ def testIntersectionIn(x, y):
 def testIntersectionOut(x, y):
     res = -450 * x + 400 * y + 180000
     if ((res >= -550) and (res <= 550)):
-        print(str(res))
         return True
-
     return False
 
 
-if __name__ == "__main__":
-    camera = cv2.VideoCapture("test2.mp4")
-
+def peopleCounter(capture, width=800):
+    """peopleCounter function
+    
+    Arguments:
+        capture {cv2.Capture} -- cv2 capture object which is
+        requited to feed system with frames 
+    
+    Keyword Arguments:
+        width {int} -- frame width (default: {800})
+    """
     firstFrame = None
+    textIn = 0
+    textOut = 0
+    # it is based on previous value
+    # for width 800 it was set to 12000
+    # for varible width I set it to 12000 = width^2 * k
+    # k is calvulated as 0.01875
+    contourAreaTreshold = (width**2) * 0.01875
 
+    print('To exit please press q')
     # loop over the frames of the video
     while True:
         # grab the current frame and initialize the occupied/unoccupied
         # text
-        (grabbed, frame) = camera.read()
+        (grabbed, frame) = capture.read()
         text = "Unoccupied"
 
         # if the frame could not be grabbed, then we have reached the end
@@ -65,9 +72,8 @@ if __name__ == "__main__":
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
         # loop over the contours
         for c in cnts:
-            print(c)
             # if the contour is too small, ignore it
-            if cv2.contourArea(c) < 12000:
+            if cv2.contourArea(c) < contourAreaTreshold:
                 continue
             # compute the bounding box for the contour, draw it on the frame,
             # and update the text
@@ -103,6 +109,32 @@ if __name__ == "__main__":
                     (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
         cv2.imshow("Security Feed", frame)
 
-    # cleanup the camera and close any open windows
-    camera.release()
+    # cleanup the capture and close any open windows
+    capture.release()
     cv2.destroyAllWindows()
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Count passing people from the selected video source')
+    parser.add_argument(
+        "source", 
+        help="the directory of the image which will be opened"
+        )
+    parser.add_argument(
+        "-w", "--width",
+        help="video frame width of the video source",
+        type=int
+    )
+
+    args = parser.parse_args()
+    capture = cv2.VideoCapture(args.source)
+    if args.width:
+        peopleCounter(capture, width=args.width)
+    else:
+        peopleCounter(capture)
+
+
+if __name__ == "__main__":
+    main()
